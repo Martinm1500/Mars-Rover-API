@@ -108,12 +108,13 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
         "dimensionY": 8,
         "name": "Tierra"
       },
-      // Additional maps...
     ]
     ```
 
 **Note:**
 - The response includes a list of all available maps.
+
+
 
   
 ## Interpreting the Map
