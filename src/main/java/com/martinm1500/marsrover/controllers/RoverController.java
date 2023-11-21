@@ -57,7 +57,7 @@ public class RoverController {
             return ResponseEntity.ok(roverDTO);
         } catch (RoverNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (InvalidCoordinatesException | InvalidOperationException e){
+        } catch (InvalidCoordinatesException | InvalidOrientationException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
