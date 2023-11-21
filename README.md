@@ -6,7 +6,7 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
 
 ### Create a Map
 
-- **Endpoint:** `POST /maps/create`
+- **Endpoint:** `POST /api/maps/create`
 - **Description:** Creates a new map.
 - **Request Body:**
   ```json
@@ -38,6 +38,83 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
 - Ensure the request payload includes the required map dimensions (`dimensionX` and `dimensionY`).
 - The response includes the created map details if successful.
 - If the map creation fails due to invalid dimensions, a `Bad Request` response is returned along with an error message indicating the cause of the failure.
+
+### Delete a Map
+
+- **Endpoint:** `DELETE /api/maps/delete/{id}`
+- **Description:** Deletes an existing map by its ID.
+- **URL Parameters:**
+  - `id`: The unique identifier of the map to be deleted.
+- **Responses:**
+  - **200 OK:** Returns a success message upon successful deletion.
+    ```json
+    {
+      "message": "Map with ID: 1 was deleted successfully"
+    }
+    ```
+  - **404 Not Found:** If the specified map ID is not found.
+    ```json
+    {
+      "error": "MapNotFoundException",
+      "message": "Map with ID: 1 not found"
+    }
+    ```
+
+**Note:**
+- Ensure the `id` parameter is provided in the endpoint URL.
+- The response includes a success message if the deletion is successful.
+- If the specified map ID is not found, a `Not Found` response is returned along with an error message.
+
+### Get Map Details
+
+- **Endpoint:** `GET /api/maps/get/{id}`
+- **Description:** Retrieves details of a map based on its ID.
+- **URL Parameters:**
+  - `id`: The unique identifier of the map to be retrieved.
+- **Responses:**
+  - **200 OK:** Returns the details of the specified map.
+    ```json
+    {
+      "id": 1,
+      "dimensionX": 8,
+      "dimensionY": 8,
+      "name": "Tierra"
+    }
+    ```
+  - **404 Not Found:** If the specified map ID is not found.
+    ```json
+    {
+      "error": "MapNotFoundException",
+      "message": "Map with ID: 1 not found"
+    }
+    ```
+
+**Note:**
+- Ensure the `id` parameter is provided in the endpoint URL.
+- The response includes the details of the specified map if it exists.
+- If the specified map ID is not found, a `Not Found` response is returned along with an error message.
+
+### Get All Maps
+
+- **Endpoint:** `GET /api/maps/get/all`
+- **Description:** Retrieves details of all available maps.
+- **Responses:**
+  - **200 OK:** Returns a list of all maps.
+    ```json
+    [
+      {
+        "id": 1,
+        "dimensionX": 8,
+        "dimensionY": 8,
+        "name": "Tierra"
+      },
+      // Additional maps...
+    ]
+    ```
+
+**Note:**
+- The response includes a list of all available maps.
+
   
 ## Interpreting the Map
 
