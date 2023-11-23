@@ -49,17 +49,6 @@ public class ObstacleController {
         }
     }
 
-    @GetMapping("/get/{obstacleId}")
-    public ResponseEntity<?> getObstacle(@PathVariable Long obstacleId) {
-        try {
-            Obstacle obtainedObstacle = obstacleService.getObstacle(obstacleId);
-            ObstacleDTO obstacleDTO = ObstacleDTO.convertToDTO(obtainedObstacle);
-            return ResponseEntity.ok(obstacleDTO);
-        } catch (ObstacleNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
-
     @GetMapping("/get/all-from-map/{mapId}")
     public ResponseEntity<?> getAllObstaclesFromMap(@PathVariable Long mapId) {
         try {
