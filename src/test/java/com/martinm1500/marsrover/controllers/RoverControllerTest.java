@@ -1,10 +1,7 @@
 package com.martinm1500.marsrover.controllers;
 
 import com.martinm1500.marsrover.dtos.RoverDTO;
-import com.martinm1500.marsrover.exceptions.InvalidCoordinatesException;
-import com.martinm1500.marsrover.exceptions.InvalidOperationException;
-import com.martinm1500.marsrover.exceptions.InvalidOrientationException;
-import com.martinm1500.marsrover.exceptions.MapNotFoundException;
+import com.martinm1500.marsrover.exceptions.*;
 import com.martinm1500.marsrover.models.Rover;
 import com.martinm1500.marsrover.services.RoverServiceImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +15,7 @@ import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class RoverControllerTest {
@@ -160,12 +157,36 @@ public class RoverControllerTest {
     @Test
     @DisplayName("Delete Rover Successfully")
     void testDeleteRover() {
-        // Check that the response status is HttpStatus.OK (200)
+        // Arrange
+        Long roverId = 1L;
+
+        // Expected repository behavior
+        doNothing().when(roverService).deleteRover(roverId);
+
+        // Act
+        ResponseEntity<?> response = roverController.deleteRover(roverId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Rover with ID: " + roverId + " was deleted successfully", response.getBody());
     }
+
     @Test
     @DisplayName("Delete Rover - RoverNotFoundException")
     void testDeleteRoverRoverNotFoundException() {
-        // Check that the response status is HttpStatus.NOT_FOUND (404)
+        // Arrange
+        Long roverId = 1L;
+        String errorMessage = "Rover with ID: " + roverId + " not found";
+
+        // Expected repository behavior
+        doThrow(new RoverNotFoundException(errorMessage)).when(roverService).deleteRover(roverId);
+
+        // Act
+        ResponseEntity<?> response = roverController.deleteRover(roverId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     //------------------------------------------------------------------------------------------------------------------
