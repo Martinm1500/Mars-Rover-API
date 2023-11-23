@@ -142,8 +142,6 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
 - **Request:**
   - **URL Parameters:**
     - `mapId`: The unique identifier of the map where the rover should be created.
-  - **Method:** POST
-  - **Content-Type:** application/json
   - **Body:**
     ```json
     {
@@ -217,8 +215,6 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
 - **Endpoint:** `PUT /api/rovers/update`
 - **Description:** Updates the details of an existing rover.
 - **Request:**
-  - **Method:** PUT
-  - **Content-Type:** application/json
   - **Body:**
     ```json
     {
@@ -327,8 +323,6 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
 - **URL Parameters:**
   - `roverId`: The unique identifier of the rover on which commands are to be executed.
 - **Request:**
-  - **Method:** POST
-  - **Content-Type:** application/json
   - **Body:**
     ```json
     ["l", "l", "f", "f", "r"]
@@ -370,8 +364,6 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
 - **Endpoint:** `POST /api/obstacles/create-on-map/{mapId}`
 - **Description:** Creates a new obstacle on a specified map.
 - **Request:**
-  - **Method:** POST
-  - **Content-Type:** application/json
   - **Body:**
     ```json
     {
