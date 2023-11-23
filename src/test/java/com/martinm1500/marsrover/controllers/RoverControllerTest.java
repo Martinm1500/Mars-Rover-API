@@ -193,26 +193,108 @@ public class RoverControllerTest {
     @Test
     @DisplayName("Update Rover Successfully")
     void testUpdateRover() {
-        // Check that the response status is HttpStatus.OK (200)
+        // Arrange
+        Long roverId = 1L;
+        Rover roverToUpdate = new Rover(4,6,Rover.SOUTH);
+        roverToUpdate.setId(roverId);
+
+        RoverDTO updatedRoverDTO = RoverDTO.convertToDTO(roverToUpdate);
+
+        // Expected repository behavior
+        when(roverService.updateRover(roverToUpdate)).thenReturn(roverToUpdate);
+
+        // Act
+        ResponseEntity<?> response = roverController.updateRover(roverToUpdate);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(updatedRoverDTO, response.getBody());
     }
+
+    @Test
+    @DisplayName("Update Rover - RoverNotFoundException")
+    void testUpdateRoverNotFound(){
+        // Arrange
+        Long roverId = 1L;
+        Rover roverToUpdate = new Rover(4,6,Rover.SOUTH);
+        roverToUpdate.setId(roverId);
+
+        String errorMessage = "Could not find rover with ID: " + roverId;
+
+        // Expected service behavior
+        when(roverService.updateRover(roverToUpdate)).thenThrow(new RoverNotFoundException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.updateRover(roverToUpdate);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
+    }
+
 
     @Test
     @DisplayName("Update Rover - InvalidCoordinatesException (Position Not on Map)")
     void testUpdateRoverInvalidCoordinatesExceptionPositionNotOnMap() {
-        // Check that the response status is HttpStatus.BAD_REQUEST (400)
+        // Arrange
+        Long roverId = 1L;
+        Rover roverToUpdate = new Rover(23,6,Rover.SOUTH);  //Rover with ID: 1 has a map 8x8
+        roverToUpdate.setId(roverId);
+
+        String errorMessage = "The rover's coordinates do not represent a valid position on the map";
+
+        // Expected service behavior
+        when(roverService.updateRover(roverToUpdate)).thenThrow(new InvalidCoordinatesException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.updateRover(roverToUpdate);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     @Test
     @DisplayName("Update Rover - InvalidCoordinatesException (Position Occupied by Obstacle)")
     void testUpdateRoverInvalidCoordinatesExceptionPositionOccupiedByObstacle() {
-        // Check that the response status is HttpStatus.BAD_REQUEST (400)
+        // Arrange
+        Long roverId = 1L;
+        Rover roverToUpdate = new Rover(3,6,Rover.SOUTH);
+        roverToUpdate.setId(roverId);
+
+        String errorMessage = "position (3,6) is occupied by an obstacle";
+
+        // Expected service behavior
+        when(roverService.updateRover(roverToUpdate)).thenThrow(new InvalidCoordinatesException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.updateRover(roverToUpdate);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     @Test
     @DisplayName("Update Rover - InvalidOrientationException")
     void testUpdateRoverInvalidOrientationException() {
-        // Check that the response status is HttpStatus.BAD_REQUEST (400)
+        // Arrange
+        Long roverId = 1L;
+        Rover roverToUpdate = new Rover(3,6,'s');
+        roverToUpdate.setId(roverId);
 
+        String errorMessage = "Invalid rover orientation. Accepted values are: " +
+                Rover.NORTH + ", " + Rover.SOUTH + ", " + Rover.EAST + ", or " + Rover.WEST;
+
+        // Expected service behavior
+        when(roverService.updateRover(roverToUpdate)).thenThrow(new InvalidOrientationException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.updateRover(roverToUpdate);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     //------------------------------------------------------------------------------------------------------------------
