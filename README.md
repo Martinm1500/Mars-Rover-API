@@ -478,7 +478,6 @@ The Rover API enables interaction with rovers and maps, providing basic operatio
         "x": 3,
         "y": 4,
       },
-      // Additional obstacles...
     ]
     ```
   - **404 Not Found:** If the specified map ID is not found.
