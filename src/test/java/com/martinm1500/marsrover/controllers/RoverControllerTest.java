@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -328,7 +327,7 @@ public class RoverControllerTest {
         Long roverId = 1L;
         String errorMessage = "Could not find rover with ID: " + roverId;
 
-        // Mock the service behavior
+        // Expected service behavior
         when(roverService.getRover(roverId)).thenThrow(new RoverNotFoundException(errorMessage));
 
         // Act
@@ -343,12 +342,40 @@ public class RoverControllerTest {
     @Test
     @DisplayName("Get Rover By Map ID Successfully")
     void testGetRoverByMapId() {
-        // Check that the response status is HttpStatus.OK (200)
+        // Arrange
+        Long mapId = 1L;
+        Rover obtainedRover = new Rover(4,4,Rover.SOUTH);
+        obtainedRover.setId(1L);
+
+        RoverDTO obtainedRoverDTO = RoverDTO.convertToDTO(obtainedRover);
+
+        // Expected service behavior
+        when(roverService.getRoverByMapId(mapId)).thenReturn(obtainedRover);
+
+        // Act
+        ResponseEntity<?> response = roverController.getRoverByMapId(mapId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(obtainedRoverDTO, response.getBody());
     }
 
     @Test
     @DisplayName("Get Rover By Map ID - MapNotFoundException")
     void testGetRoverByMapIdMapNotFoundException() {
+        // Arrange
+        Long mapId = 1L;
+        String errorMessage = "No rover found for map with ID: " + mapId;
+
+        // Expected service behavior
+        when(roverService.getRoverByMapId(mapId)).thenThrow(new MapNotFoundException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.getRoverByMapId(mapId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
     //------------------------------------------------------------------------------------------------------------------
     @Test

@@ -58,7 +58,7 @@ public class RoverServiceImpl implements RoverService{
 
     @Transactional
     @Override
-    public void deleteRover(Long roverId) throws RoverNotFoundException {
+    public void deleteRover(Long roverId){
         Optional<Rover> optionalRover = roverRepository.findById(roverId);
         if(optionalRover.isPresent()){
             Map map = optionalRover.get().getMap();
@@ -111,18 +111,18 @@ public class RoverServiceImpl implements RoverService{
     }
 
     @Override
-    public Rover getRoverByMapId(Long mapId) throws MapNotFoundException {
+    public Rover getRoverByMapId(Long mapId){
         Optional<Map> optionalMap = mapRepository.findById(mapId);
         if(optionalMap.isPresent()){
             return optionalMap.get().getRover();
         }else{
-            throw new MapNotFoundException("Could not find map with ID: " + mapId);
+            throw new MapNotFoundException("No rover found for map with ID: " + mapId);
         }
     }
 
     @Transactional
     @Override
-    public Obstacle executeCommands(Long roverId, List<Character> commands) throws RoverNotFoundException, InvalidCommandException {
+    public Obstacle executeCommands(Long roverId, List<Character> commands){
         Optional<Rover> optionalRover = roverRepository.findById(roverId);
         if (optionalRover.isPresent()){
             Rover rover = optionalRover.get();
