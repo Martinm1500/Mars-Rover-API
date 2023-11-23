@@ -2,6 +2,7 @@ package com.martinm1500.marsrover.controllers;
 
 import com.martinm1500.marsrover.dtos.RoverDTO;
 import com.martinm1500.marsrover.exceptions.*;
+import com.martinm1500.marsrover.models.Obstacle;
 import com.martinm1500.marsrover.models.Rover;
 import com.martinm1500.marsrover.services.RoverServiceImpl;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -381,28 +386,79 @@ public class RoverControllerTest {
     @Test
     @DisplayName("Execute Commands Successfully (No Obstacle)")
     void testExecuteCommandsNoObstacle() {
-        // Ensure that the RoverController.executeCommands(roverId, commands) method returns HttpStatus.OK (200)
-        // Check that the response status is HttpStatus.OK (200) if no obstacle is encountered
+        // Arrange
+        Long roverId = 1L;
+        List<Character> commands = Arrays.asList(Rover.MOVE_FORDWARD, Rover.MOVE_FORDWARD, Rover.TURN_RIGHT);
+
+        //Expected service behavior
+        when(roverService.executeCommands(roverId, commands)).thenReturn(null);
+
+        // Act
+        ResponseEntity<?> response = roverController.executeCommands(roverId, commands);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNull(response.getBody());
     }
 
     @Test
     @DisplayName("Execute Commands with Obstacle (Conflict)")
     void testExecuteCommandsWithObstacle() {
-        // Check that the response status is HttpStatus.CONFLICT (409) if an obstacle is encountered
-        // Check that the response body contains information about the obstacle
+        // Arrange
+        Long roverId = 1L;
+        List<Character> commands = Arrays.asList(Rover.MOVE_FORDWARD, Rover.TURN_RIGHT, Rover.MOVE_FORDWARD);
+        Obstacle obstacle = new Obstacle(3, 5);
+
+        String errorMessage = "Mission aborted due to obstacle at coordinates: " +
+                "(" + obstacle.getX() + ", " + obstacle.getY() + ")";
+
+        //Expected service behavior
+        when(roverService.executeCommands(roverId, commands)).thenReturn(obstacle);
+
+        // Act
+        ResponseEntity<?> response = roverController.executeCommands(roverId, commands);
+
+        // Assert
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     @Test
     @DisplayName("Execute Commands - RoverNotFoundException")
     void testExecuteCommandsRoverNotFoundException() {
-        // Check that the response status is HttpStatus.NOT_FOUND (404)
-        // Check that the response body contains information about the RoverNotFoundException
+        // Arrange
+        Long roverId = 1L;
+        List<Character> commands = Arrays.asList(Rover.MOVE_FORDWARD, Rover.TURN_RIGHT, Rover.MOVE_FORDWARD);
+        String errorMessage = "Could not find rover with ID: " + roverId;
+
+        // Expected service behavior
+        when(roverService.executeCommands(roverId, commands)).thenThrow(new RoverNotFoundException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.executeCommands(roverId, commands);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     @Test
     @DisplayName("Execute Commands - InvalidCommandException")
     void testExecuteCommandsInvalidCommandException() {
-        // Check that the response status is HttpStatus.BAD_REQUEST (400)
-        // Check that the response body contains information about the InvalidCommandException
+        // Arrange
+        Long roverId = 1L;
+        List<Character> commands = Arrays.asList('L','F');
+        String errorMessage = "Invalid command 'L'. Accepted commands are: " + Rover.MOVE_FORDWARD + ", " + Rover.MOVE_BACKWARD
+                + ", " + Rover.TURN_RIGHT + ", or " + Rover.TURN_LEFT;
+
+        // Expected service behavior
+        when(roverService.executeCommands(roverId, commands)).thenThrow(new InvalidCommandException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.executeCommands(roverId, commands);
+
+        // Assert
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 }
