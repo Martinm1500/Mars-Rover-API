@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -40,7 +41,7 @@ public class RoverControllerTest {
         RoverDTO roverDTO = RoverDTO.convertToDTO(createdRover);
         roverDTO.setMapId(mapId);
 
-        //Expected repository behavior
+        //Expected service behavior
         when(roverService.createRover(eq(rover), eq(mapId))).thenReturn(createdRover);
 
         // Act
@@ -60,7 +61,7 @@ public class RoverControllerTest {
         Rover rover = new Rover(4,4,Rover.NORTH);
         String errorMessage = "Could not find map with ID: 73";
 
-        //Expected repository behavior
+        //Expected service behavior
         when(roverService.createRover(rover,mapId)).thenThrow(new MapNotFoundException(errorMessage));
 
         //Act
@@ -80,7 +81,7 @@ public class RoverControllerTest {
 
         String errorMessage = "The rover's coordinates do not represent a valid position on the map";
 
-        //Expected repository behavior
+        //Expected service behavior
         when(roverService.createRover(rover,mapId)).thenThrow(new InvalidCoordinatesException(errorMessage));
 
         //Act
@@ -100,7 +101,7 @@ public class RoverControllerTest {
 
         String errorMessage = "position (1,5) is occupied by an obstacle";
 
-        //Expected repository behavior
+        //Expected service behavior
         when(roverService.createRover(rover,mapId)).thenThrow(new InvalidCoordinatesException(errorMessage));
 
         //Act
@@ -121,7 +122,7 @@ public class RoverControllerTest {
                 Rover.NORTH + ", " + Rover.SOUTH + ", " + Rover.EAST + ", or " + Rover.WEST;
         //NORTH (N), SOUTH (S), EAST (E) and WEST (W)
 
-        //Expected repository behavior
+        //Expected service behavior
         when(roverService.createRover(rover,mapId)).thenThrow(new InvalidOrientationException(errorMessage));
 
         //Act
@@ -141,7 +142,7 @@ public class RoverControllerTest {
 
         String errorMessage = "The map already has a rover" ;
 
-        //Expected repository behavior
+        //Expected service behavior
         when(roverService.createRover(rover,mapId)).thenThrow(new InvalidOperationException(errorMessage));
 
         //Act
@@ -160,7 +161,7 @@ public class RoverControllerTest {
         // Arrange
         Long roverId = 1L;
 
-        // Expected repository behavior
+        // Expected service behavior
         doNothing().when(roverService).deleteRover(roverId);
 
         // Act
@@ -178,7 +179,7 @@ public class RoverControllerTest {
         Long roverId = 1L;
         String errorMessage = "Rover with ID: " + roverId + " not found";
 
-        // Expected repository behavior
+        // Expected service behavior
         doThrow(new RoverNotFoundException(errorMessage)).when(roverService).deleteRover(roverId);
 
         // Act
@@ -200,7 +201,7 @@ public class RoverControllerTest {
 
         RoverDTO updatedRoverDTO = RoverDTO.convertToDTO(roverToUpdate);
 
-        // Expected repository behavior
+        // Expected service behavior
         when(roverService.updateRover(roverToUpdate)).thenReturn(roverToUpdate);
 
         // Act
@@ -302,12 +303,40 @@ public class RoverControllerTest {
     @Test
     @DisplayName("Get Rover Successfully")
     void testGetRover() {
-        // Check that the response status is HttpStatus.OK (200)
+        // Arrange
+        Long roverId = 1L;
+        Rover obtainedRover = new Rover(4,4,Rover.SOUTH);
+        obtainedRover.setId(roverId);
+
+        RoverDTO obtainedRoverDTO = RoverDTO.convertToDTO(obtainedRover);
+
+        // Expected service behavior
+        when(roverService.getRover(roverId)).thenReturn(obtainedRover);
+
+        // Act
+        ResponseEntity<?> response = roverController.getRover(roverId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(obtainedRoverDTO, response.getBody());
     }
 
     @Test
     @DisplayName("Get Rover - RoverNotFoundException")
     void testGetRoverRoverNotFoundException() {
+        // Arrange
+        Long roverId = 1L;
+        String errorMessage = "Could not find rover with ID: " + roverId;
+
+        // Mock the service behavior
+        when(roverService.getRover(roverId)).thenThrow(new RoverNotFoundException(errorMessage));
+
+        // Act
+        ResponseEntity<?> response = roverController.getRover(roverId);
+
+        // Assert
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(errorMessage, response.getBody());
     }
 
     //------------------------------------------------------------------------------------------------------------------
