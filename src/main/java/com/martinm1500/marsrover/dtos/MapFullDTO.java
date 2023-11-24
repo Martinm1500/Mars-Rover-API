@@ -15,7 +15,7 @@ public class MapFullDTO {
     private List<ObstacleDTO> obstacles;
     private RoverDTO rover;
 
-    public static MapFullDTO convertFromEntity(Map map) {
+    public static MapFullDTO convertToFullDTO(Map map) {
         MapFullDTO mapFullDTO = new MapFullDTO();
         mapFullDTO.setId(map.getId());
         mapFullDTO.setName(map.getName());

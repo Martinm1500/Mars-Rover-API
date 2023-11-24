@@ -47,7 +47,7 @@ public class MapController {
     public ResponseEntity<?> getMap(@PathVariable Long id) {
         try {
             Map obtainedMap = mapService.getMap(id);
-            MapFullDTO mapFullDTO = MapFullDTO.convertFromEntity(obtainedMap);
+            MapFullDTO mapFullDTO = MapFullDTO.convertToFullDTO(obtainedMap);
             return ResponseEntity.ok(mapFullDTO);
         } catch (MapNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -59,7 +59,6 @@ public class MapController {
         List<MapDTO> mapDTOs = maps.stream()
                 .map(MapDTO::convertToDTO)
                 .collect(Collectors.toList());
-
         return ResponseEntity.ok(mapDTOs);
     }
 }
