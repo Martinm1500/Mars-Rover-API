@@ -2,6 +2,10 @@
 
 The Rover API enables interaction with rovers and maps, providing basic operations through specific interfaces.
 
+Java 17, Spring Boot, Spring Data JPA, and Hibernate were utilized for data persistence. Spring Web was employed for constructing web services, and MySQL served as the database.
+
+Additionally, I streamlined code generation with Lombok and developed unit tests using JUnit 5 and Mockito.
+
 ## Endpoints - Maps
 
 ### Create a Map
